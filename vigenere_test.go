@@ -9,17 +9,21 @@ import (
 	"github.com/jamest1234/vigenere/keyprovider"
 )
 
-func TestKeyProvider(T *testing.T) {
+func TestKeyProvider(t *testing.T) {
 
 	keyword := "Fantastic"
 	message := "The quick brown fox jumps over the lazy dog."
 
-	kp := keyprovider.New(keyword)
+	kp, err := keyprovider.New(keyword)
+
+	if err != nil {
+		t.Fail()
+	}
 
 	fmt.Printf("Testing KeyProvider with \"%s\" and \"%s\"\n", keyword, message)
 
 	for _, char := range message {
-		if vigenere.IsAlpha(char) {
+		if keyprovider.IsAlpha(char) {
 			fmt.Print(string(kp.GetChar()))
 			kp.NextChar(char)
 		} else {
@@ -30,7 +34,7 @@ func TestKeyProvider(T *testing.T) {
 	fmt.Println()
 
 	for _, char := range message {
-		if vigenere.IsAlpha(char) {
+		if keyprovider.IsAlpha(char) {
 			fmt.Print(string(unicode.ToUpper(char)))
 		} else {
 			fmt.Print(string(char))
@@ -45,12 +49,15 @@ func TestVigenere(t *testing.T) {
 	keyword := "Fantastic"
 	message := "The quick brown fox jumps over the lazy dog."
 
-	scrambler := vigenere.New(keyword)
+	scrambler, err := vigenere.New(keyword)
+	if err != nil {
+		t.Fail()
+	}
 
 	fmt.Printf("Encoding \"%s\" using \"%s\"\n", message, scrambler.GetCurrentKeyword())
 
 	for _, char := range message {
-		if vigenere.IsAlpha(char) {
+		if keyprovider.IsAlpha(char) {
 			fmt.Print(string(unicode.ToUpper(char)))
 		} else {
 			fmt.Print(string(char))
@@ -72,7 +79,7 @@ func TestVigenere(t *testing.T) {
 	fmt.Printf("Decoding \"%s\" using \"%s\"\n", encodedMessage, scrambler.GetCurrentKeyword())
 
 	for _, char := range encodedMessage {
-		if vigenere.IsAlpha(char) {
+		if keyprovider.IsAlpha(char) {
 			fmt.Print(string(unicode.ToUpper(char)))
 		} else {
 			fmt.Print(string(char))
@@ -91,7 +98,10 @@ func TestVigenere(t *testing.T) {
 }
 
 func TestVigenereEncodeDecodeString(t *testing.T) {
-	v := vigenere.New("Fantastic")
+	v, err := vigenere.New("Fantastic")
+	if err != nil {
+		t.Fail()
+	}
 	original := "The quick brown fox jumps over the lazy dog."
 	enc := v.EncodeString(original)
 	fmt.Println(enc)

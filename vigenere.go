@@ -14,10 +14,6 @@ type Vigenere struct {
 	keyProvider  *keyprovider.KeyProvider
 }
 
-func IsAlpha(char rune) bool {
-	return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
-}
-
 func (v *Vigenere) initialiseTable() {
 	for row := 0; row < CHARACTERS; row++ {
 		char := 'B' + row
@@ -32,14 +28,20 @@ func (v *Vigenere) initialiseTable() {
 	}
 }
 
-func New(keyword string) *Vigenere {
+func New(keyword string) (*Vigenere, error) {
+
+	kp, err := keyprovider.New(keyword)
+	if err != nil {
+		return nil, err
+	}
+
 	v := Vigenere{
 		keyword:     keyword,
-		keyProvider: keyprovider.New(keyword),
+		keyProvider: kp,
 	}
 	v.initialiseTable()
 
-	return &v
+	return &v, nil
 }
 
 func (v *Vigenere) GetCurrentKeyword() string {
@@ -59,7 +61,7 @@ func (v *Vigenere) Reset() {
 }
 
 func (v *Vigenere) Encode(char rune) rune {
-	if !IsAlpha(char) {
+	if !keyprovider.IsAlpha(char) {
 		return char
 	}
 
@@ -85,7 +87,7 @@ func (v *Vigenere) Encode(char rune) rune {
 }
 
 func (v *Vigenere) Decode(char rune) rune {
-	if !IsAlpha(char) {
+	if !keyprovider.IsAlpha(char) {
 		return char
 	}
 	upperChar := unicode.ToUpper(char)
