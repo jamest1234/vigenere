@@ -9,23 +9,21 @@ import (
 const CHARACTERS = 26
 
 type Vigenere struct {
-	mappingTable [CHARACTERS][CHARACTERS]rune
-	keyword      string
-	keyProvider  *keyprovider.KeyProvider
+	keyword     string
+	keyProvider *keyprovider.KeyProvider
 }
 
-func (v *Vigenere) initialiseTable() {
-	for row := 0; row < CHARACTERS; row++ {
-		char := 'B' + row
-		for column := 0; column < CHARACTERS; column++ {
-			if char > 'Z' {
-				char = 'A'
-			}
-
-			v.mappingTable[row][column] = rune(char)
-			char++
-		}
+func letterIndexToRune(index int32) rune {
+	index = (index % CHARACTERS) + 'B'
+	if index > 'Z' {
+		index = 'A'
 	}
+	return index
+}
+
+func runeToLetterIndex(char rune) int32 {
+	return unicode.ToUpper(char) - 'A'
+
 }
 
 func New(keyword string) (*Vigenere, error) {
@@ -39,7 +37,6 @@ func New(keyword string) (*Vigenere, error) {
 		keyword:     keyword,
 		keyProvider: kp,
 	}
-	v.initialiseTable()
 
 	return &v, nil
 }
@@ -65,18 +62,7 @@ func (v *Vigenere) Encode(char rune) rune {
 		return char
 	}
 
-	var letterIndex rune
-	var keyIndex rune
-
-	if unicode.IsUpper(char) {
-		letterIndex = char - 65
-	} else {
-		letterIndex = char - 32 - 65
-	}
-
-	keyIndex = v.keyProvider.GetChar() - 65
-
-	result := v.mappingTable[letterIndex][keyIndex]
+	result := letterIndexToRune(runeToLetterIndex(char) + runeToLetterIndex(v.keyProvider.GetChar()))
 	v.keyProvider.NextChar(char)
 
 	if unicode.IsLower(char) {
@@ -90,14 +76,13 @@ func (v *Vigenere) Decode(char rune) rune {
 	if !keyprovider.IsAlpha(char) {
 		return char
 	}
-	upperChar := unicode.ToUpper(char)
-	keyIndex := v.keyProvider.GetChar() - 65
 
+	upperChar := unicode.ToUpper(char)
 	var result rune
 
-	for i := 0; i < CHARACTERS; i++ {
-		if v.mappingTable[keyIndex][i] == upperChar {
-			result = rune(i + 65)
+	for i := int32(0); i < CHARACTERS; i++ {
+		if letterIndexToRune(i+runeToLetterIndex(v.keyProvider.GetChar())) == upperChar {
+			result = (i % CHARACTERS) + 'A'
 			break
 		}
 	}
