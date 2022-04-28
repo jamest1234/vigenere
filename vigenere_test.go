@@ -17,7 +17,7 @@ func TestKeyProvider(t *testing.T) {
 	kp, err := keyprovider.New(keyword)
 
 	if err != nil {
-		t.Fail()
+		t.Fatal(err)
 	}
 
 	fmt.Printf("Testing KeyProvider with \"%s\" and \"%s\"\n", keyword, message)
@@ -51,7 +51,7 @@ func TestVigenere(t *testing.T) {
 
 	scrambler, err := vigenere.New(keyword)
 	if err != nil {
-		t.Fail()
+		t.Fatal(err)
 	}
 
 	fmt.Printf("Encoding \"%s\" using \"%s\"\n", message, scrambler.GetCurrentKeyword())
@@ -100,7 +100,7 @@ func TestVigenere(t *testing.T) {
 func TestVigenereEncodeDecodeString(t *testing.T) {
 	v, err := vigenere.New("Fantastic")
 	if err != nil {
-		t.Fail()
+		t.Fatal(err)
 	}
 	original := "The quick brown fox jumps over the lazy dog."
 	enc := v.EncodeString(original)
@@ -110,6 +110,13 @@ func TestVigenereEncodeDecodeString(t *testing.T) {
 	fmt.Println(dec)
 
 	if dec != original {
-		t.Fail()
+		t.Fatal()
+	}
+}
+
+func TestEmptyKey(t *testing.T) {
+	_, err := vigenere.New("")
+	if err == nil {
+		t.Fatal()
 	}
 }

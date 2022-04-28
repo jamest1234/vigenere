@@ -23,6 +23,9 @@ func New(keyword string) (*KeyProvider, error) {
 func (kp *KeyProvider) Initialise(keyword string) error {
 	kp.index = 0
 	kp.size = len(keyword)
+	if kp.size == 0 {
+		return fmt.Errorf("Invalid key length of 0")
+	}
 	kp.keyword = make([]rune, kp.size)
 	for i, char := range keyword {
 		if !IsAlpha(char) {
