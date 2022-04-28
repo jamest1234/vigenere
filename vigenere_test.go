@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 	"unicode"
-	"vigenere"
-	"vigenere/keyprovider"
+
+	"github.com/jamest1234/vigenere"
+	"github.com/jamest1234/vigenere/keyprovider"
 )
 
 func TestKeyProvider(T *testing.T) {

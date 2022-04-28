@@ -2,7 +2,8 @@ package vigenere
 
 import (
 	"unicode"
-	"vigenere/keyprovider"
+
+	"github.com/jamest1234/vigenere/keyprovider"
 )
 
 const CHARACTERS = 26
